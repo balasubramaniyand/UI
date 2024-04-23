@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Scm check out') {
+            steps {
+                git credentialsId: 'gitlab', url: 'https://pexgit.growipx.com/supportfirst/supportfirst-frontend.git', branch: 'main'
+            }
+        }
+    
+        stages('npm install'){
+            stpes{
+                dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
+             sh 'npm install -f'
+                         }
+            }
+        }
+                
+            }
+        }    
+    
