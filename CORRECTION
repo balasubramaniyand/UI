@@ -8,14 +8,15 @@ pipeline {
             }
         }
     
-        stages('npm install'){
+        stage ('npm install'){
             stpes{
                 dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
              sh 'npm install -f'
-                         }
-            }
-        }
-                
-            }
-        }    
+                        
+               }
+             }
+         }
+     }
+  }    
     
+
