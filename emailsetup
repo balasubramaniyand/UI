@@ -1,0 +1,92 @@
+pipeline {
+    agent any
+    
+    parameters {
+        choice (
+            choices:['main', 'devops'],
+            description: 'Branch to build',
+            name: 'branch'
+        )
+        choice (
+            choices:['10.20.245.106', ''],
+            description: 'IP Address to deploy',
+            name: 'IP_ADDRESS'
+        )
+        choice (
+            choices:[ 'root',''],
+            description: 'Username for SSH',
+            name: 'USERNAME'
+        )
+    }
+
+    stages {
+        stage('Scm check out') {
+            steps {
+                git credentialsId: 'gitlab', url: 'https://pexgit.growipx.com/supportfirst/supportfirst-frontend.git', branch:  "${params.branch}"
+            }
+        }
+    
+        stage ('npm install'){
+            steps {
+                dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
+                    sh 'npm install -f'
+                }
+            }
+        }
+
+        stage('ng build --prod') {
+            steps {
+                dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
+                    sh 'ng build --prod'
+                }
+            }
+        }
+        
+        stage('Filerename') {
+            steps {
+                script {
+                    try {
+                        sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'cd /opt/supportfirst/test && sh -x SupportfirstUI.sh'"
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Failed to execute file rename: ${e.message}"
+                    }
+                }
+            }
+        }
+
+        stage('SCP File transfer') {
+            steps {
+                script {
+                    try {
+                        sh "scp -r -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/SupportfirstUI/dist/supportFirst/ ${params.USERNAME}@${params.IP_ADDRESS}:/opt/supportfirst/test/"
+                        sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'mv /opt/supportfirst/test/supportFirst /opt/supportfirst/test/supportfirst' "
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Failed to transfer files via SCP: ${e.message}"
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            script {
+                def projectName = env.JOB_NAME
+                def buildNumber = env.BUILD_NUMBER
+                def buildUrl = env.BUILD_URL
+                
+                if (currentBuild.result == 'FAILURE') {
+                    mail to: 'balasubramaniyan.d@iopex.com',
+                    subject: 'Deployment unsuccessful',
+                    body: "Hello Team,\n\nThe build to the staging environment is unsuccessful.\n\nPlease find the required details below.\n\nProject: ${projectName}\n\nBuild Number: ${buildNumber}\n\nURL: ${buildUrl}"
+                } else {
+                    mail to: 'balasubramaniyan.d@iopex.com',
+                    subject: 'Deployment successful',
+                    body: "Hello Team,\n\nThe build to the staging environment is successful.\n\nPlease find the required details below.\n\nProject: ${projectName}\n\nBuild Number: ${buildNumber}\n\nURL: ${buildUrl}"
+                }
+            }
+        }
+    }
+}
