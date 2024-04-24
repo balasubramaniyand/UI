@@ -15,5 +15,13 @@ pipeline {
                 }
             }
         }
+
+        stage('ng build --prod') {
+            steps {
+                dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
+                    sh 'ng build --prod'
+                }
+            }
+        }
     }
 }
