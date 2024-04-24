@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Scm check out') {
+            steps {
+                git credentialsId: 'gitlab', url: 'https://pexgit.growipx.com/supportfirst/supportfirstv2-imap-restapi', branch: 'main'
+            }
+        }
+    
+        stage('Maven Build') {
+            steps {
+                script {
+                    def mvnHome = tool name: 'Maven', type: 'maven'
+                    sh "${mvnHome}/bin/mvn clean install"
+                }
+            }
+        }
+
+        stage('Sonar Analysis') {
+            steps {
+                script {
+                    def mvnHome = tool name: 'Maven', type: 'maven'
+                    withSonarQubeEnv('sonar') {
+                        sh "${mvnHome}/bin/mvn sonar:sonar"
+                    }
+                }
+            }
+        }
+       stage('Filerename') {
+            steps {
+                script {
+                        sh "ssh -p 7774 root@10.20.245.106 'cd /opt/supportfirst/test && sh -x IMAPService.sh'"
+                   
+                    }
+                }
+            }
+        stage('SCP File transfer') {
+            steps {
+                script {
+                    sh "scp -r -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/Supportfirstv2-imap-restapi/target/IMAPService-0.0.1-SNAPSHOT.war  root@10.20.245.106:/opt/supportfirst/test/"
+                }
+            }
+        }
+    stage('SSH Connection') {
+            steps {
+                script {
+                       sh "ssh -p 7774 root@10.20.245.106 'cd /opt/supportfirst/test && nohup java -jar IMAPService-0.0.1-SNAPSHOT.war &' "
+                        //sleep time: 10
+                      }
+                }    
+            } 
+    }
+}  
