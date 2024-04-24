@@ -60,3 +60,15 @@ pipeline {
         }
     }
 }
+teps {
+                script {
+                    try {
+                        git credentialsId: 'gitlab', url: 'https://pexgit.growipx.com/supportfirst/supportfirst-api-service.git', branch: "${params.branch}"
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Failed to clone repository: ${e.message}"
+                    }
+                }
+            }
+        }
+        
