@@ -55,10 +55,6 @@ pipeline {
                         dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
                             sh 'ng build --prod'
                         }
-                        // After successful deployment, send a deployment mail
-                        mail to: 'balasubramaniyan.d@iopex.com',
-                        subject: 'Deployment Successful',
-                        body: "Hello Team,\n\nDeployment to the Development has succeeded.\n\nProject: ${env.JOB_NAME}\n\nBuild Number: ${env.BUILD_NUMBER}\n\nURL: ${env.BUILD_URL}"
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         error "Failed to run ng build: ${e.message}"
@@ -71,9 +67,14 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh "ssh -o StrictHostKeyChecking=no ${params.USERNAME}@${params.IP_ADDRESS} 'cd /opt/supportfirst/test && sh -x SupportfirstUI.sh'"
-                        sh "scp -r /var/lib/jenkins/workspace/SupportfirstUI/dist/supportFirst/ ${params.USERNAME}@${params.IP_ADDRESS}:/opt/supportfirst/test/"
-                        sh "ssh ${params.USERNAME}@${params.IP_ADDRESS} 'mv /opt/supportfirst/test/supportFirst /opt/supportfirst/test/supportfirst'"
+                        sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'cd /opt/supportfirst/test && sh -x SupportfirstUI.sh'"
+                        sh "scp -r -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/SupportfirstUI/dist/supportFirst  ${params.USERNAME}@${params.IP_ADDRESS}:/opt/supportfirst/test/"
+                        sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'mv /opt/supportfirst/test/supportFirst /opt/supportfirst/test/supportfirst'"
+                    
+                        // After successful deployment, send a deployment mail
+                        mail to: 'balasubramaniyan.d@iopex.com',
+                        subject: 'Deployment Successful',
+                        body: "Hello Team,\n\nDeployment to the Development has succeeded.\n\nProject: ${env.JOB_NAME}\n\nBuild Number: ${env.BUILD_NUMBER}\n\nURL: ${env.BUILD_URL}"
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         error "Failed to deploy frontend: ${e.message}"
