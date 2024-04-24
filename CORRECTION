@@ -24,10 +24,13 @@ pipeline {
             }
         }
 
-        stage('Move to /var/www/html') {
+       
+ stage('SCP File transfer') {
             steps {
-                sh 'mv /var/lib/jenkins/workspace/SupportfirstUI/dist/* /var/www/html'
-            }
-        }
-    }
-}
+                script {
+                    try {
+                        sh "scp -T -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/SupportfirstUI/dist/supportFirst ${params.USERNAME}@${params.IP_ADDRESS}:/opt/supportfirst/test"
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Failed to transfer file via SCP: ${e.message}"
+                    }
