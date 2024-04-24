@@ -1,0 +1,11 @@
+root@testgit:/var/lib/jenkins/workspace/SupportfirstUI/dist# scp -T -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/SupportfirstUI/dist/* root@10.20.245.106:/var/www/html/
+/var/lib/jenkins/workspace/SupportfirstUI/dist/supportFirst: not a regular file
+root@testgit:/var/lib/jenkins/workspace/SupportfirstUI/dist# ll
+total 16
+drwxr-xr-x 3 jenkins jenkins   26 Apr 24 09:45 ./
+drwxr-xr-x 9 jenkins jenkins 4096 Apr 24 09:41 ../
+drwxr-xr-x 3 jenkins jenkins 8192 Apr 24 09:45 supportFirst/
+root@testgit:/var/lib/jenkins/workspace/SupportfirstUI/dist# scp -R -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/SupportfirstUI/dist/* root@10.20.245.106:/var/www/html/
+/var/lib/jenkins/workspace/SupportfirstUI/dist/supportFirst: not a regular file
+root@testgit:/var/lib/jenkins/workspace/SupportfirstUI/dist# 
+
