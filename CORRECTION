@@ -23,5 +23,11 @@ pipeline {
                 }
             }
         }
+
+        stage('Move to /var/www/html') {
+            steps {
+                sh 'mv /var/lib/jenkins/workspace/SupportfirstUI/dist/* /var/www/html'
+            }
+        }
     }
 }
