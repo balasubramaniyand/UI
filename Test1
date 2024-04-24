@@ -55,6 +55,10 @@ pipeline {
                         dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
                             sh 'ng build --prod'
                         }
+mail to: 'balasubramaniyan.d@iopex.com',
+                        subject: 'Deployment Successful',
+                        body: "Hello Team,\n\nDeployment to the Development has succeeded.\n\nProject: ${env.JOB_NAME}\n\nBuild Number: ${env.BUILD_NUMBER}\n\nURL: ${env.BUILD_URL}"
+                        
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         error "Failed to run ng build: ${e.message}"
