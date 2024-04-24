@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Scm check out') {
+            steps {
+                git credentialsId: 'gitlab', url: 'https://pexgit.growipx.com/supportfirst/supportfirst-frontend.git', branch: 'main'
+            }
+        }
+    
+        stage ('npm install'){
+            steps {
+                dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
+                    sh 'npm install -f'
+                }
+            }
+        }
+
+        stage('ng build --prod') {
+            steps {
+                dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
+                    sh 'ng build --prod'
+                }
+            }
+        }
+
+        stage('SCP File transfer') {
+            steps {
+                script {
+                    sh "scp -r -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/SupportfirstUI/dist/supportFirst/ root@10.20.245.106:/opt/supportfirst/test/"
+                    sh "ssh-p 7774 root@10.20.245.106 '/opt/supportfirst/test/mv supportFirst supportfirst' "               
+                }
+            }
+        }
+    }
+}
++ ssh-p 7774 root@10.20.245.106 /opt/supportfirst/test/mv supportFirst supportfirst
+/var/lib/jenkins/workspace/SupportfirstUI@tmp/durable-e2e319b1/script.sh.copy: 1: ssh-p: not found
