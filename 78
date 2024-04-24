@@ -1,0 +1,12 @@
+stage('Deploy Frontend') {
+    steps {
+        script {
+            try {
+                sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'cd /opt/supportfirst/test && sh -x SupportfirstUI.sh'"
+            } catch (Exception e) {
+                currentBuild.result = 'FAILURE'
+                error "Failed to execute the deployment script via SSH: ${e.message}"
+            }
+        }
+    }
+}
