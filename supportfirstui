@@ -27,7 +27,14 @@ pipeline {
                 }
             }
         }
-
+       stage('Filerename') {
+            steps {
+                script {
+                        sh "ssh -p 7774 root@10.20.245.106 'cd /opt/supportfirst/test && sh -x IMAPService.sh'"
+                   
+                    }
+                }
+            }
         stage('SCP File transfer') {
             steps {
                 script {
@@ -35,5 +42,15 @@ pipeline {
                 }
             }
         }
+    stage('SSH Connection') {
+            steps {
+                script {
+                       sh "ssh -p 7774 root:10.20.245.106 'cd /opt/supportfirst/test && nohup java -jar IMAPService-0.0.1-SNAPSHOT.war' &"
+                        sleep time: 10
+                      }
+                }    
+            } 
     }
 }  
++ ssh -p 7774 root:10.20.245.106 cd /opt/supportfirst/test && nohup java -jar IMAPService-0.0.1-SNAPSHOT.war
+ssh: Could not resolve hostname root:10.20.245.106: Name or service not known
