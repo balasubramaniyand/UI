@@ -24,13 +24,12 @@ pipeline {
             }
         }
 
-       
- stage('SCP File transfer') {
+        stage('SCP File transfer') {
             steps {
                 script {
-                    try {
-                        sh "scp -T -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/SupportfirstUI/dist/supportFirst ${params.USERNAME}@${params.IP_ADDRESS}:/opt/supportfirst/test"
-                    } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'
-                        error "Failed to transfer file via SCP: ${e.message}"
-                    }
+                    sh "scp -T -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/SupportfirstUI/dist/supportFirst root@10.20.245.106:/opt/supportfirst/test"
+                }
+            }
+        }
+    }
+}
