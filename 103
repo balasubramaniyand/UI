@@ -1,0 +1,127 @@
+pipeline {
+    agent any
+    
+    parameters {
+        choice (
+            choices:['main', 'devops'],
+            description: 'Branch to build',
+            name: 'branch'
+        )
+        choice (
+            choices:['10.20.245.106'],
+            description: 'IP Address to deploy',
+            name: 'IP_ADDRESS'
+        )
+        string(
+            defaultValue: 'root',
+            description: 'Username for SSH',
+            name: 'USERNAME'
+        )
+    }
+    
+    stages {
+        stage('Clone') {
+            steps {
+                script {
+                    try {
+                        git credentialsId: 'gitlab', url: 'https://pexgit.growipx.com/supportfirst/supportfirstv2-imap-restapi', branch: params.branch
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Failed to clone repository: ${e.message}"
+                    }
+                }
+            }
+        }
+        
+        stage('Maven Build') {
+            steps {
+                script {
+                    try {
+                        def mvnHome = tool name: 'Maven', type: 'maven'
+                        sh "${mvnHome}/bin/mvn clean install"
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Maven build failed: ${e.message}"
+                    }
+                }
+            }
+        }
+        
+        stage('Sonar Analysis') {
+            steps {
+                script {
+                    try {
+                        def mvnHome = tool name: 'Maven', type: 'maven'
+                        withSonarQubeEnv('sonar') {
+                            sh "${mvnHome}/bin/mvn sonar:sonar"
+                        }
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Sonar analysis failed: ${e.message}"
+                    }
+                }
+            }
+        }
+    
+        stage('File Rename') {
+            steps {
+                script {
+                    try {
+                        sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'cd /opt/supportfirst/test && sh -x IMAPService.sh'"
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Failed to execute file rename: ${e.message}"
+                    }
+                }
+            }
+        }
+        
+        stage('SCP File Transfer') {
+            steps {
+                script {
+                    try {
+                        sh "scp -T -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/Supportfirstapitest/target/IMAPService-0.0.1-SNAPSHOT.war ${params.USERNAME}@${params.IP_ADDRESS}:/opt/supportfirst/test"
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Failed to transfer file via SCP: ${e.message}"
+                    }
+                }
+            }
+        }
+    
+        stage('SSH Connection') {
+            steps {
+                script {
+                    try {
+                        sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'cd /opt/supportfirst/test && nohup java -jar IMAPService-0.0.1-SNAPSHOT.war > /dev/null 2>&1 &'"
+                        // Wait for the application to start
+                        sleep time: 30
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Failed to start application via SSH: ${e.message}"
+                    }
+                }
+            }
+        }
+     }
+    
+    post {
+        always {
+            script {
+                def projectName = env.JOB_NAME
+                def buildNumber = env.BUILD_NUMBER
+                def buildUrl = env.BUILD_URL
+                
+                if (currentBuild.result == 'FAILURE') {
+                    mail to: 'balasubramaniyan.d@iopex.com',
+                    subject: 'Build unsuccessful',
+                    body: "Hello Team,\n\nThe build to the staging environment is unsuccessful.\n\nPlease find the required details below.\n\nProject: ${projectName}\n\nBuild Number: ${buildNumber}\n\nURL: ${buildUrl}"
+                } else {
+                    mail to: 'balasubramaniyan.d@iopex.com',
+                    subject: 'Build successful',
+                    body: "Hello Team,\n\nThe build to the staging environment is successful.\n\nPlease find the required details below.\n\nProject: ${projectName}\n\nBuild Number: ${buildNumber}\n\nURL: ${buildUrl}"
+                }
+            }
+        }
+    }
+}
