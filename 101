@@ -1,36 +1,18 @@
-drwxr-xr-x 3 root root     8192 Apr 25 01:06 supportFirst/
-drwxr-xr-x 4 root root     8192 Apr 25 00:46 supportfirst_20240425/
--rw-r--r-- 1 root root 93339394 Apr 24 22:27 supportfirst-api-service-0.0.1.war
--rw-r--r-- 1 root root 93312052 Apr  7 22:50 supportfirst-api-service-0.0.1.war_20240407
--rw-r--r-- 1 root root 93312052 Apr  7 22:40 supportfirst-api-service-0.0.1.war_20240407_22:40
--rw-r--r-- 1 root root 93312052 Apr  7 22:05 supportfirst-api-service-0.0.1.war_20240407_22:53
--rw-r--r-- 1 root root 93339394 Apr  7 23:02 supportfirst-api-service-0.0.1.war_20240407_23:06
--rw-r--r-- 1 root root 93339394 Apr  8 15:54 supportfirst-api-service-0.0.1.war_20240408
--rw-r--r-- 1 root root 93339394 Apr  9 20:02 supportfirst-api-service-0.0.1.war_20240409
--rw-r--r-- 1 root root 93339394 Apr 10 08:56 supportfirst-api-service-0.0.1.war_20240410
--rw-r--r-- 1 root root 93339394 Apr 11 19:41 supportfirst-api-service-0.0.1.war_20240411
--rw-r--r-- 1 root root 93339394 Apr 13 12:55 supportfirst-api-service-0.0.1.war_20240413
--rw-r--r-- 1 root root 93339394 Apr 13 13:01 supportfirst-api-service-0.0.1.war_20240416
--rw-r--r-- 1 root root 93339394 Apr 18 11:53 supportfirst-api-service-0.0.1.war_20240418
--rw-r--r-- 1 root root 93339394 Apr 18 12:28 supportfirst-api-service-0.0.1.war_20240422
--rw-r--r-- 1 root root 93339394 Apr 23 13:53 supportfirst-api-service-0.0.1.war_20240423
--rw-r--r-- 1 root root 93339394 Apr 24 22:09 supportfirst-api-service-0.0.1.war_20240424
--rw-r--r-- 1 root root      192 Apr 24 19:20 SupportfirstUI.sh
--rwxr-xr-x 1 root root      251 Apr  7 23:11 test.sh*
-drwxr-xr-x 2 root root        6 Apr  7 17:40 uploads/
-root@sf-dev1:/opt/supportfirst/test# cat SupportfirstUI.sh 
- #! /bin/bash
+ ssh -p 7774 root@10.20.245.106 mv /opt/supportfirst/test/supportFirst /opt/supportfirst/test/supportfirst
+mv: cannot move '/opt/supportfirst/test/supportFirst' to '/opt/supportfirst/test/supportfirst/supportFirst': File exists
+root@sf-dev1:/opt/supportfirst/test# cat SupportUI.sh 
+#! /bin/bash
+
+#back up path
 path_file="/opt/supportfirst/test/"
-
-
 day=$(date +%Y%m%d)
-file="supportfirst"
-war_file="supportfirst_$day"
+timestamp=$(date +%H:%M)
+file="supportFirst"
 
+war_file="supportFirst_${day}_${timestamp}"
 # rename existing war file
 mv $file $war_file
 
 echo "Backup finished"
-root@sf-dev1:/opt/supportfirst/test# ^C
-root@sf-dev1:/opt/supportfirst/test# 
 
+root@sf-dev1:/opt/supportfirst/test#
