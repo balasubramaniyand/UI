@@ -8,108 +8,108 @@ pipeline {
             name: 'branch'
         )
         choice (
-            choices:['10.20.245.106'],
+            choices:['10.20.245.106', ''],
             description: 'IP Address to deploy',
             name: 'IP_ADDRESS'
         )
-        string(
-            defaultValue: 'root',
+        choice (
+            choices:[ 'root',''],
             description: 'Username for SSH',
             name: 'USERNAME'
         )
     }
-
-    stages {
-        stage('Checkout Frontend Code') {
-            steps {
-                script {
-                    try {
-                        git credentialsId: 'gitlab', url: 'https://pexgit.growipx.com/supportfirst/supportfirst-frontend.git', branch: "${params.branch}"
-                    } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'
-                        error "Failed to clone frontend repository: ${e.message}"
-                    }
-                }
-            }
-        }
     
-        stage('npm install') {
+    stages {
+        stage('Clone') {
             steps {
                 script {
                     try {
-                        dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
-                            sh 'npm install -f'
-                        }
+                        git credentialsId: 'gitlab', url: 'https://pexgit.growipx.com/supportfirst/supportfirstv2-imap-restapi', branch: "${params.branch}"
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
-                        error "Failed to run npm install: ${e.message}"
-                    }
-                }
-            }
-        }
-
-        stage('ng build --prod') {
-            steps {
-                script {
-                    try {
-                        dir('/var/lib/jenkins/workspace/SupportfirstUI/') {
-                            sh 'ng build --prod'
-                        }
-                    } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'
-                        error "Failed to run ng build: ${e.message}"
-                    }
-                }
-            }
-        }
-        stage('rename') {
-            steps {
-                script {
-                    try {
-                        dir('/var/lib/jenkins/workspace/SupportfirstUI/dist') {
-                            sh 'mv supportFirst supportfirst'
-                        }
-                    } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'
-                        error "Failed to run ng build: ${e.message}"
+                        error "Failed to clone repository: ${e.message}"
                     }
                 }
             }
         }
         
-        stage('rename') {
+        stage('Maven Build') {
             steps {
                 script {
                     try {
-                       
-                        sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'cd /opt/supportfirst/test && sh -x SupportUI.sh'"
+                        def mvnHome = tool name: 'Maven', type: 'maven'
+                        sh "${mvnHome}/bin/mvn clean install"
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
-                        error "Failed to execute the deployment script via SSH: ${e.message}"
+                        error "Maven build failed: ${e.message}"
                     }
                 }
             }
         }
-
-        stage('Deploy Frontend') {
+        
+        stage('Sonar Analysis') {
             steps {
                 script {
                     try {
-                        sh "scp -r -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/SupportfirstUI/dist/supportFirst  ${params.USERNAME}@${params.IP_ADDRESS}:/opt/supportfirst/test/"
-                         //sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'mv /opt/supportfirst/test/supportFirst /opt/supportfirst/test/supportfirst'"
-                    
+                        def mvnHome = tool name: 'Maven', type: 'maven'
+                        withSonarQubeEnv('sonar') {
+                            sh "${mvnHome}/bin/mvn sonar:sonar"
+                        }
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Sonar analysis failed: ${e.message}"
+                    }
+                }
+            }
+        }
+    
+        
+        stage('Filerename') {
+            steps {
+                script {
+                    try {
+                        sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'cd /opt/supportfirst/test && sh -x IMAPService.sh'"
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Failed to execute file rename: ${e.message}"
+                    }
+                }
+            }
+        }
+        
+        stage('SCP File transfer') {
+            steps {
+                script {
+                    try {
+                        sh "scp -T -P 7774 -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/Supportfirstapitest/target/IMAPService-0.0.1-SNAPSHOT.war ${params.USERNAME}@${params.IP_ADDRESS}:/opt/supportfirst/test"
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Failed to transfer file via SCP: ${e.message}"
+                    }
+                }
+            }
+        }
+    
+        stage('SSH Connection') {
+            steps {
+                script {
+                    try {
+                        //sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'cd /opt/supportfirst/test && kill \$(lsof -t -i:9000) ' "
+                       sh "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'cd /opt/supportfirst/test && nohup java -jar IMAPService-0.0.1-SNAPSHOT.war &' &"
+                        sleep time: 10
                         // After successful deployment, send a deployment mail
                         mail to: 'balasubramaniyan.d@iopex.com',
                         subject: 'Deployment Successful',
                         body: "Hello Team,\n\nDeployment to the Development has succeeded.\n\nProject: ${env.JOB_NAME}\n\nBuild Number: ${env.BUILD_NUMBER}\n\nURL: ${env.BUILD_URL}"
+                        
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
-                        error "Failed to deploy frontend: ${e.message}"
+                        error "Failed to start application via SSH: ${e.message}"
                     }
                 }
             }
         }
-    }
+     }
     
     post {
         always {
@@ -130,4 +130,4 @@ pipeline {
             }
         }
     }
-}
+}v
