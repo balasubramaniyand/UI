@@ -1,0 +1,11 @@
+ Shell Script -- ssh -p 7774 root@10.20.245.106 'cd /opt/supportfirst/test && sh -x SupportfirstUI.sh' (self time 6s)
++ ssh -p 7774 root@10.20.245.106 cd /opt/supportfirst/test && sh -x SupportfirstUI.sh
++ path_file=/opt/supportfirst/test/
++ date +%Y%m%d
++ day=20240425
++ file=supportfirst
++ war_file=supportfirst_20240425
++ mv supportfirst supportfirst_20240425
+mv: cannot move 'supportfirst' to 'supportfirst_20240425/supportfirst': File exists
+Backup finished
++ echo Backup finished
