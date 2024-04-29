@@ -1,0 +1,42 @@
+root@cio-ai:/etc/apache2/sites-enabled# apache2ctl -t
+AH00526: Syntax error on line 30 of /etc/apache2/sites-enabled/openproject.conf:
+Invalid command 'openproject', perhaps misspelled or defined by a module not included in the server configuration
+Action '-t' failed.
+The Apache error log may have more information.
+root@cio-ai:/etc/apache2/sites-enabled# 
+
+Include /etc/openproject/addons/apache2/includes/server/*.conf
+IncludeOptional /etc/openproject/addons/apache2/custom/server/*.conf
+
+<VirtualHost *:80>
+  ServerName demo-openproject.growipx.com
+  RewriteEngine On
+  RewriteRule ^/?(.*) https://%{SERVER_NAME}:443/$1 [R,L]
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName demo-openproject.growipx.com
+  DocumentRoot /opt/openproject/public
+
+  ProxyRequests off
+ # SSLEngine On
+ # SSLCertificateFile /etc/pki/tls/certs/growipx.com.crt
+ # SSLCertificateKeyFile /etc/pki/tls/private/growipx.com.key
+ # SSLCACertificateFile /etc/pki/tls/certs/gd_bundle-g2-g1.crt
+   RequestHeader set "X-Forwarded-Proto" https
+  Include /etc/openproject/addons/apache2/includes/vhost/*.conf
+  IncludeOptional /etc/openproject/addons/apache2/custom/vhost/*.conf
+
+  # Can't use Location block since it would overshadow all the other proxypass directives on CentOS
+  #ProxyPass / http://127.0.0.1:6000/ retry=0
+  #ProxyPassReverse / http://127.0.0.1:6000/
+   ProxyPreserveHost On
+   ProxyRequests Off
+   ProxyPass / http://10.20.246.32:8080/
+   ProxyPassReverse / http://10.20.246.32:8080/
+  openproject config:set SERVER_PROTOCOL_FORCE_HTTPS="true"
+</VirtualHost>
+~                                                                                                                                  
+~                                                                                                                                  
+"openproject.conf" 31L, 1191B                                                                                    30,59         All
+
