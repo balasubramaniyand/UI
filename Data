@@ -1,0 +1,5 @@
+\c sonar
+GRANT USAGE ON SCHEMA public TO sonarqube_user;
+COMMIT;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO sonarqube_user;
+\dn+
