@@ -1,22 +1,18 @@
+
 pipeline {
     agent any
 
-    parameters {
-        string(name: 'USERNAME', description: 'Username for SSH connection')
-        string(name: 'IP_ADDRESS', description: 'IP address of the remote server')
-    }
-
     stages {
-        stage('Check Port 9000') {
+        stage('Check Port 8084') {
             steps {
                 script {
-                    def sshCommand = "ssh -p 7774 ${params.USERNAME}@${params.IP_ADDRESS} 'netstat -tuln | grep 9000'"
+                    def sshCommand = "'ssh -p 7774 root@10.20.245.106' cd /opt/supportfirst/imapservice && netstat -tuln | grep 8084'"
                     def portStatus = sh(script: sshCommand, returnStatus: true)
 
                     if (portStatus == 0) {
-                        echo 'Port 9000 is running'
+                        echo 'Port 8084 is running'
                     } else {
-                        echo 'Port 9000 is not running'
+                        echo 'Port 8084 is not running'
                         currentBuild.result = 'FAILURE'
                     }
                 }
@@ -29,6 +25,7 @@ pipeline {
             script {
                 if (currentBuild.result == 'FAILURE') {
                     mail to: 'balasubramaniyan.d@iopex.com',
+                    //cc :'rohith.venkatesh@iopex.com',
                     subject: 'IMAP WAR NOT RUNNING',
                     body: "Hello Team,\n\nImap war file is not running on the server. Please check the server."
                 }
