@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Check Port 9000') {
+            steps {
+                script {
+                    def portStatus = sh(script: 'netstat -tuln | grep 9000', returnStatus: true)
+                    if (portStatus == 0) {
+                        sendEmailNotification()
+                    } else {
+                        echo 'Port 9000 is not running'
+                    }
+                }
+            }
+        }
+    }
+}
+
+def sendEmailNotification() {
+    emailext (
+        subject: 'Port 9000 is running',
+        body: 'The port 9000 is currently running.',
+        to: 'your@email.com',
+        mimeType: 'text/plain'
+    )
+}
