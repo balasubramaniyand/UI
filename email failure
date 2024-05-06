@@ -1,0 +1,15 @@
+balasubramaniyand@CHNIOPEXL5097:/opt$ sudo systemctl stop jenkins
+balasubramaniyand@CHNIOPEXL5097:/opt$ sh -x imap.sh
++ netstat -tuln
++ grep :8090
++ [ 1 -eq 0 ]
++ echo Port 8090 is not running
+Port 8090 is not running
++ send_email
++ SUBJECT=Port 8090 is not running
++ TO=balasubramaniyan.d@iopex.gmail.com
++ BODY=Port 8090 is not running. Please check.
++ echo Port 8090 is not running. Please check.
++ mail -s Port 8090 is not running balasubramaniyan.d@iopex.gmail.com
+imap.sh: 8: mail: not found
+balasubramaniyand@CHNIOPEXL5097:/opt$ 
