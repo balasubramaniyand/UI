@@ -1,0 +1,5 @@
+oot@42fe3a0bd143:/var/opt# scp -T -P 7774 -o StrictHostKeyChecking=no /var/opt/Dockerfile balasubramaniyan.d@10.20.125.101:/home/balasubramaniyan.d"
+> ^C
+root@42fe3a0bd143:/var/opt# scp -T -P 7774 -o StrictHostKeyChecking=no /var/opt/Dockerfile balasubramaniyan.d@10.20.125.101:/home/balasubramaniyan.d 
+bash: scp: command not found
+root@42fe3a0bd143:/var/opt# 
