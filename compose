@@ -1,0 +1,19 @@
+balasubramaniyand@CHNIOPEXL5097:/opt/uiopexwise/opexwise-ui$ cat docker-compose.yml 
+version: '2.1'
+networks:
+  iopex_network:
+    external: true
+services:
+  opexwiseui:
+    image: balasubramaniyand/test:latest
+    restart: on-failure:5
+    networks:
+      - iopex_network
+    hostname: opexwiseui
+    healthcheck:
+      test: pgrep -f nginx || exit 1
+      interval: 10m
+      timeout: 10s
+      retries: 3
+balasubramaniyand@CHNIOPEXL5097:/opt/uiopexwise/opexwise-ui$ 
+
