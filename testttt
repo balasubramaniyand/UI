@@ -1,0 +1,24 @@
+balasubramaniyand@CHNIOPEXL5097:/opt/uiopexwise$ cd opexwise-ui/
+balasubramaniyand@CHNIOPEXL5097:/opt/uiopexwise/opexwise-ui$ ll
+total 468
+drwxr-xr-x 8 root root      20 May 20 21:33 ./
+drwxr-xr-x 4 root root       4 May 20 21:31 ../
+-rw-r--r-- 1 root root    3882 May 20 21:33 angular.json
+drwxr-xr-x 6 root root       6 May 20 21:33 build/
+drwxr-xr-x 3 root root       5 May 20 21:33 dist/
+drwxr-xr-x 3 root root       5 May 20 21:33 docker/
+-rw-r--r-- 1 root root     321 May 20 21:33 docker-compose.yml
+drwxr-xr-x 3 root root       5 May 20 21:33 e2e/
+-rw-r--r-- 1 root root     274 May 20 21:33 .editorconfig
+drwxr-xr-x 8 root root      13 May 20 21:33 .git/
+-rw-r--r-- 1 root root     648 May 20 21:33 .gitignore
+-rw-r--r-- 1 root root    1425 May 20 21:33 karma.conf.js
+-rw-r--r-- 1 root root    2322 May 20 21:33 package.json
+-rw-r--r-- 1 root root 1010886 May 20 21:33 package-lock.json
+-rw-r--r-- 1 root root    1159 May 20 21:33 README.md
+drwxr-xr-x 5 root root      13 May 20 21:33 src/
+-rw-r--r-- 1 root root     287 May 20 21:33 tsconfig.app.json
+-rw-r--r-- 1 root root     864 May 20 21:33 tsconfig.json
+-rw-r--r-- 1 root root     333 May 20 21:33 tsconfig.spec.json
+-rw-r--r-- 1 root root    3185 May 20 21:33 tslint.json
+balasubramaniyand@CHNIOPEXL5097:/opt/uiopexwise/opexwise-ui$ 
