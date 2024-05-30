@@ -1,0 +1,9 @@
+root@opexwise-dev2:/home/balasubramaniyan.d/test# ls
+arlo_superset:1.2.tar  config.py
+root@opexwise-dev2:/home/balasubramaniyan.d/test# tar --force-local -xvzf arlo_superset\:1.2.tar
+
+gzip: stdin: not in gzip format
+tar: Child returned status 1
+tar: Error is not recoverable: exiting now
+root@opexwise-dev2:/home/balasubramaniyan.d/test# 
+
