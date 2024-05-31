@@ -1,0 +1,4 @@
+balasubramaniyand@CHNIOPEXL5097:~/superset$ sudo  docker-compose -f docker-compose-image-tag.yml up -d 
+ERROR: /home/balasubramaniyand/superset/docker/.env-local is not a file.
+balasubramaniyand@CHNIOPEXL5097:~/superset$ 
+
