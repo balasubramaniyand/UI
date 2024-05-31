@@ -1,0 +1,33 @@
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                     
+2692050 root      20   0  807072 224444  60116 R 100.0   0.3   0:06.15 /usr/local/bin/python /usr/local/bin/celery -A superset.ta+ 
+2692101 root      20   0   90012  43792  12292 R  31.1   0.1   0:00.69 /usr/bin/python3 manage.py runcrons                         
+2895521 root      20   0       0      0      0 S  10.4   0.0 855:03.01 [kcs-file/1]                                                
+2895520 root      20   0       0      0      0 S   9.9   0.0 855:29.11 [kcs-file/0]                                                
+1193223 root      20   0  816180 215284  10560 S   5.9   0.3  87:42.56 /usr/local/bin/python /usr/local/bin/celery --app=superset+ 
+1193243 root      20   0  816900 215896  10544 S   5.9   0.3  89:37.45 /usr/local/bin/python /usr/local/bin/celery --app=superset+ 
+2895512 root      20   0       0      0      0 S   4.1   0.0 379:51.47 [kcs-evdefer/3]                                             
+2093453 root      20   0 1210168 173120  33064 S   3.6   0.3 100:43.71 /usr/local/bin/uwsgi --ini opexwise.ini                     
+2093463 root      20   0 1243252 206072  33436 S   3.6   0.3 101:38.78 /usr/local/bin/uwsgi --ini opexwise.ini                     
+2895509 root      20   0       0      0      0 S   3.6   0.0 379:44.03 [kcs-evdefer/0]                                             
+2895510 root      20   0       0      0      0 S   3.6   0.0 379:48.50 [kcs-evdefer/1]                                             
+2895511 root      20   0       0      0      0 S   3.6   0.0 379:57.57 [kcs-evdefer/2]                                             
+2093435 root      20   0 1203376 166160  32960 S   2.7   0.3  96:59.54 /usr/local/bin/uwsgi --ini opexwise.ini                     
+2093442 root      20   0 1201188 163916  32860 S   2.3   0.2  99:45.85 /usr/local/bin/uwsgi --ini opexwise.ini                     
+2691939 root      20   0   18188   4596   3516 R   1.8   0.0   0:00.74 top                                                         
+2895516 root      20   0       0      0      0 S   1.4   0.0  87:34.15 [kcs-created]                                               
+1192920 root      20   0  721768  66540   7048 S   0.9   0.1 295:25.96 /usr/local/bin/uwsgi --ini bot.ini                          
+1192927 root      20   0  710580  54708   6432 S   0.9   0.1 291:08.94 /usr/local/bin/uwsgi --ini bot.ini                          
+1193172 root      20   0  778592 205404  39412 S   0.9   0.3  90:21.08 /usr/local/bin/python /usr/local/bin/celery --app=superset+ 
+1273141 raghude+  20   0 4920952 405636  19700 S   0.9   0.6  63:40.60 /usr/lib/jvm/java-17-openjdk-amd64/bin/java -ea -XX:+Disab+ 
+2692109 raghude+  20   0   12016   6280   5580 S   0.9   0.0   0:00.02 ssh -l ansible 10.10.50.24 rsync --server -logDtprze.iLsfx+ 
+   1061 root      20   0  141624  20152  14568 S   0.5   0.0 162:04.46 /usr/bin/nxagentd -S                                        
+   1235 root      20   0 4916864 126276  62896 S   0.5   0.2 378:12.38 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/con+ 
+ 628948 raghude+  20   0 3449200  71272  18460 S   0.5   0.1  90:30.56 /usr/lib/jvm/java-1.17.0-openjdk-amd64/bin/java -ea -Xms16+ 
+1191802 systemd+  20   0 2435956 399296  29756 S   0.5   0.6 193:33.39 mysqld                                                      
+1192520 itadmin   20   0 1778944 553816  25192 S   0.5   0.8 100:00.83 java -D[Standalone] -server -Xms64m -Xmx512m -XX:Metaspace+ 
+1192926 root      20   0  714600  59360   7024 S   0.5   0.1 311:17.21 /usr/local/bin/uwsgi --ini bot.ini                          
+1192928 root      20   0  714828  59388   6836 S   0.5   0.1 291:56.48 /usr/local/bin/uwsgi --ini bot.ini                          
+root@opexwise-dev2:~# kill -9 2692050
+-bash: kill: (2692050) - No such process
+root@opexwise-dev2:~# 
+
