@@ -1,0 +1,13 @@
+root@opexwise-dev2:~#  ps aux | grep celery
+root     2705009  2.8  0.3 776916 226832 ?       Sl   03:09   0:08 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     2705011  1.8  0.3 809444 225372 ?       Sl   03:09   0:05 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app beat --pidfile /tmp/celerybeat.pid -l INFO -s /app/superset_home/celerybeat-schedule
+root     2705238  0.4  0.2 781548 180408 ?       S    03:09   0:01 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     2705272  0.0  0.2 778776 176568 ?       S    03:09   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     2705273  0.0  0.2 778780 176588 ?       S    03:09   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     2705274  0.0  0.2 778132 173504 ?       S    03:09   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     2705276  0.0  0.2 778136 173468 ?       S    03:09   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     2705277  0.0  0.2 778140 173472 ?       S    03:09   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     2705280  0.2  0.2 780100 179004 ?       S    03:09   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     2705290  0.5  0.2 781936 180468 ?       S    03:09   0:01 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     2707049  0.0  0.0   6432  2504 pts/0    S+   03:14   0:00 grep --color=auto celery
+root@opexwise-dev2:~# 
