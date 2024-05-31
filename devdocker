@@ -1,0 +1,9 @@
+balasubramaniyand@CHNIOPEXL5097:~/superset$ sudo  docker-compose -f docker-compose-image-tag.yml up -d 
+ERROR: The Compose file './docker-compose-image-tag.yml' is invalid because:
+services.db.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset-init.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset-worker.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset-worker-beat.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+balasubramaniyand@CHNIOPEXL5097:~/superset$ 
+
