@@ -50,6 +50,163 @@ superset_worker_beat  | 2024-06-24 10:34:17,202:WARNING:superset.utils.cache_man
 superset_worker_beat  | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
 superset_worker_beat  | 2024-06-24 10:34:17,206:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
 superset_worker       | logging was configured successfully
+
+
+#from keycloack_securtiy_manager  import  OIDCSecurityManager
+#from flask_appbuilder.security.manager import AUTH_OID, AUTH_REMOTE_USER, AUTH_DB, AUTH_LDAP, AUTH_OAUTH
+import logging
+import os
+from datetime import timedelta
+from cachelib.file import FileSystemCache
+from celery.schedules import crontab
+from typing import Optional
+'''
+---------------------------KEYCLOACK ----------------------------
+'''
+#curr  =  os.path.abspath(os.getcwd())
+#AUTH_TYPE = AUTH_OID
+#SECRET_KEY: 'opexwisesupersetintegration'
+#OIDC_CLIENT_SECRETS =  curr + '/pythonpath/client_secret.json'
+#OIDC_ID_TOKEN_COOKIE_SECURE = False
+#OIDC_REQUIRE_VERIFIED_EMAIL = False
+#OIDC_OPENID_REALM: 'opexwise'
+#OIDC_INTROSPECTION_AUTH_METHOD: 'client_secret_post'
+#CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
+#AUTH_USER_REGISTRATION = False
+#AUTH_USER_REGISTRATION_ROLE = 'Alpha'
+'''
+--------------------------------------------------------------
+'''
+
+ENABLE_CORS = True
+
+#ENABLE_PROXY_FIX = True
+#PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 0, "x_prefix": 1}
+
+PREFERRED_URL_SCHEME = 'https'
+SUPERSET_WEBSERVER_PROTOCOL = "https"
+
+HTTP_HEADERS={}
+
+PUBLIC_ROLE_LIKE = "Gamma"
+
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_HTTPONLY = False
+
+WTF_CSRF_ENABLED = False
+
+#Alert
+ALERT_REPORTS_NOTIFICATION_DRY_RUN = False
+
+
+#migration to postgres
+SQLALCHEMY_DATABASE_URI = "postgresql://superset:superset@13.126.219.64:5431/superset"
+
+FEATURE_FLAGS = {
+    "DASHBOARD_NATIVE_FILTERS": True,
+    "DASHBOARD_CROSS_FILTERS": True,
+    "DASHBOARD_NATIVE_FILTERS_SET": True,
+    "ALERT_REPORTS": True,
+    "DASHBOARD_RBAC": True,
+    "ENABLE_TEMPLATE_PROCESSING": True
+}
+TEMPLATES_EXTENSIONS= ['superset_jinja2_ext']
+LOGIN_REDIRECT_URL = '/login'
+DISABLED_TOP_LEVEL_NAV_ITEMS=['Dashboards','Charts','Data','Settings','Datasets']
+#STATIC_FILES_EXCLUDE_LIST = ['static/assets/package.json']
+
+def get_env_variable(var_name: str, default: Optional[str] = None) -> str:
+    """Get the environment variable or raise exception."""
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        if default is not None:
+            return default
+        else:
+            error_msg = "The environment variable {} was missing, abort...".format(
+                var_name
+            )
+            raise EnvironmentError(error_msg)
+
+
+
+REDIS_HOST = get_env_variable("REDIS_HOST")
+REDIS_PORT = get_env_variable("REDIS_PORT")
+REDIS_CELERY_DB = get_env_variable("REDIS_CELERY_DB", "0")
+REDIS_RESULTS_DB = get_env_variable("REDIS_RESULTS_DB", "1")
+
+RESULTS_BACKEND = FileSystemCache("/app/superset_home/sqllab")
+
+
+class CeleryConfig(object):
+    BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_CELERY_DB}"
+    CELERY_IMPORTS = ("superset.sql_lab", "superset.tasks")
+    CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_RESULTS_DB}"
+    CELERYD_LOG_LEVEL = "DEBUG"
+    CELERYD_PREFETCH_MULTIPLIER = 1
+    CELERY_ACKS_LATE = False
+    CELERYBEAT_SCHEDULE = {
+        "reports.scheduler": {
+            "task": "reports.scheduler",
+            "schedule": crontab(minute="*", hour="*"),
+        },
+        "reports.prune_log": {
+            "task": "reports.prune_log",
+            "schedule": crontab(minute=10, hour=0),
+        },
+    }
+
+
+CELERY_CONFIG = CeleryConfig
+
+
+# Email configuration
+#SMTP_HOST = "smtp.iopex.com" # change to your host
+#SMTP_PORT = 587 # your port, e.g. 587
+#SMTP_STARTTLS = True
+#SMTP_SSL_SERVER_AUTH = True # If your using an SMTP server with a valid certificate
+#SMTP_SSL = False
+#SMTP_USER = "opexwise-jenkins" # use the empty string "" if using an unauthenticated SMTP server
+#SMTP_PASSWORD = "qoejkvssxfitvszx" # use the empty string "" if using an unauthenticated SMTP server
+#SMTP_MAIL_FROM = "opexwise-jenkins@iopex.com"
+#EMAIL_REPORTS_SUBJECT_PREFIX = "[Superset] " # optional - overwrites default value in config.py of "[Report] "
+#SQLLAB_CTAS_NO_LIMIT = True
+SMTP_HOST = "smtp.gmail.com" # change to your host
+SMTP_PORT = 587 # your port, e.g. 587
+SMTP_STARTTLS = True
+SMTP_SSL_SERVER_AUTH = True # If your using an SMTP server with a valid certificate
+SMTP_SSL = False
+SMTP_USER = "iopexdashboard@gmail.com" # use the empty string "" if using an unauthenticated SMTP server
+SMTP_PASSWORD = "vxcjhrfvuylgwfcb" # use the empty string "" if using an unauthenticated SMTP server
+SMTP_MAIL_FROM = "iopexdashboard@gmail.com"
+EMAIL_REPORTS_SUBJECT_PREFIX = "[Superset] " # optional - overwrites default value in config.py of "[Report] "
+SQLLAB_CTAS_NO_LIMIT = True
+
+
+#SCREENSHOT_LOCATE_WAIT = 1000
+#SCREENSHOT_LOAD_WAIT = 6000
+# WebDriver configuration
+# If you use Firefox, you can stick with default values
+# If you use Chrome, then add the following WEBDRIVER_TYPE and WEBDRIVER_OPTION_ARGS
+WEBDRIVER_TYPE = "chrome"
+WEBDRIVER_OPTION_ARGS = [
+    "--force-device-scale-factor=2.0",
+    "--high-dpi-support=2.0",
+    "--headless",
+    "--disable-gpu",
+    "--disable-dev-shm-usage",
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-extensions",
+]
+# This is for internal use, you can keep http
+#WEBDRIVER_BASEURL = "https://test.opexwise.ai:8003/"
+WEBDRIVER_BASEURL = "http://13.126.219.64:8003/"
+# This is the link sent to the recipient. Change to your domain, e.g. https://superset.mydomain.com
+#WEBDRIVER_BASEURL_USER_FRIENDLY = "http://superset.localhost:8003"
+
+
 superset_worker       | 2024-06-24 10:34:17,245:INFO:superset.utils.logging_configurator:logging was configured successfully
 superset_worker       | 2024-06-24 10:34:17,246:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
 superset_worker       | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
